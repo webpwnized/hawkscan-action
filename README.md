@@ -85,7 +85,7 @@ jobs:
 
 ### `configurationFiles`
 
-**Optional** A list of HawkScan configuration files to use. Defaults to `stackhawk.yml`. File names can be separated with spaces, commas, or newlines.
+**Optional** A list of HawkScan configuration files to use. If workspace argument is provided, the file paths are relative to the workspace. Defaults to `stackhawk.yml`. File names can be separated with spaces, commas, or newlines.
 
 For example:
 ```yaml
@@ -98,6 +98,26 @@ jobs:
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
+```
+
+Example using workspace:
+```yaml
+      # Check out the repository codebase into the `repo` directory.
+      - name: Check out the codebase
+        uses: actions/checkout@main
+        with:
+          repository: account/repo
+          path: **my-workspace**  # Check out the code to this directory
+
+      # Run StackHawk Scan
+      - name: Run StackHawk Scan
+        uses: stackhawk/hawkscan-action@main
+        with:
+          **workspace: my-workspace  # Path to the workspace.**
+          apiKey: ${{ secrets.HAWK_API_KEY }}                          # Secret key for authentication.
+          **configurationFiles: .github/workflows/config/stackhawk.yml   # Path to configuration file relative to workspace.**
+          codeScanningAlerts: true                                     # Enable code scanning alerts.
+          githubToken: ${{ github.token }}                             # GitHub token for authentication to Code Scanning Alerts
 ```
 
 ### `installCLIOnly`
